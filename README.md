@@ -1,5 +1,5 @@
 # Lnx
-
+1 608 104 076
 Repositorio dedicado a la divulgación matemática mediante códigos predefinidos que generan animaciones de cálculo avanzado, problemas de integrales, límites y otros conceptos matemáticos utilizando LaTeX y Python.
 
 ## Descripción
