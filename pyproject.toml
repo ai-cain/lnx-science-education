@@ -1,0 +1,25 @@
+[project]
+name = "lnx"
+version = "0.1.0"
+description = "Libreria compartida de estilo y utilidades Manim para las animaciones Lnx"
+requires-python = ">=3.10"
+dependencies = [
+    "manim>=0.19",
+    "numpy",
+    "scipy",
+    "pillow",
+    "tqdm",
+    "pyyaml",
+    "manim-voiceover[gtts,transcribe]",
+]
+
+[project.scripts]
+lnx = "lnx.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["animation"]
+include = ["lnx*"]

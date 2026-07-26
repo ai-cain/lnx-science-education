@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "latex-document-skill": {
+      "source": "ndpvt-web/latex-document-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "cc0f91e440cf2adb22a5cc18b040e4f4b61dac7f6088ccd0a5aa1c458791db5b"
+    },
+    "manimce-best-practices": {
+      "source": "adithya-s-k/manim_skill",
+      "sourceType": "github",
+      "skillPath": "skills/manimce-best-practices/SKILL.md",
+      "computedHash": "d8a9168f993c3152944059fed0ec258101f7ed00d24852a9eb73d8541a2b92ed"
+    }
+  }
+}

@@ -4,7 +4,7 @@ Repositorio dedicado a la divulgación matemática mediante códigos predefinido
 
 ## Descripción
 
-Este proyecto tiene como objetivo facilitar la creación de contenido visual matemático de alta calidad. Los scripts predefinidos combinan el poder de LaTeX y Python (con la biblioteca [Manim](https://www.manim.community/)) para generar animaciones, gráficos y presentaciones ideales para educadores, estudiantes y entusiastas de las matemáticas. Los temas incluyen:
+Este proyecto tiene como objetivo facilitar la creación de contenido visual matemático de alta calidad. Combina Python + [Manim](https://www.manim.community/) para las animaciones y LaTeX para los documentos, con una identidad visual común. Ideal para educadores, estudiantes y entusiastas de las matemáticas. Los temas incluyen:
 
 - **Cálculo avanzado**: Límites, derivadas, integrales y series.
 - **Visualización matemática**: Representación gráfica de conceptos abstractos.
@@ -12,54 +12,54 @@ Este proyecto tiene como objetivo facilitar la creación de contenido visual mat
 
 ## Requisitos
 
-- **Python 3.8+**
-- **Manim**: Biblioteca para animaciones matemáticas.
-- **LaTeX**: Para renderizar ecuaciones y texto matemático.
-- **Dependencias adicionales**: Ver `requirements.txt` (si existe).
+- **Python 3.10+**
+- **LaTeX**: MiKTeX o TeX Live, disponible en el PATH.
+- Manim y el resto de dependencias se instalan con el paso siguiente.
 
 ## Instalación
 
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/asdcainicela/Lnx.git 
-   cd Lnx
-   ```
+```bash
+git clone https://github.com/asdcainicela/Lnx.git
+cd Lnx
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -e .
+```
 
-2. Instala las dependencias necesarias:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Esto instala la librería `lnx` en modo editable y deja disponible el comando `lnx`.
 
-3. Asegúrate de tener LaTeX instalado y configurado en tu sistema.
+Los skills externos no se versionan (pesan mucho); se reinstalan desde `skills-lock.json`:
+
+```bash
+npx skills install
+```
+
+Opcional: [SoX](http://sox.sourceforge.net/) (`winget install ChrisBagwell.SoX`) para que la narración pueda ajustar la velocidad del audio.
 
 ## Uso
 
-1. Navega al directorio de scripts:
-   ```bash
-   cd animation/scripts
-   ```
+```bash
+lnx                       # menú interactivo: elige escena y calidad
+lnx list                  # listar las escenas disponibles
+lnx espiral-fibonacci     # renderizar lo que coincida con ese texto
+```
 
-2. Ejecuta un script con Manim:
-   ```bash
-   manim -pql calculus/sum.py
-   ```
-   - `-pql`: Renderiza en calidad baja con vista previa rápida.
-   - Cambia las opciones según tus necesidades (`-pqh` para alta calidad).
-
-3. Explora los scripts predefinidos y utilízalos para tus proyectos de divulgación matemática.
+Para crear un video nuevo, usa el skill `lnx-video`, que guía el proceso completo (arquetipo narrativo, guion en beats, escena Manim y render).
 
 ## Estructura del Proyecto
 
-- `animation/scripts`: Contiene los scripts de Python para generar animaciones matemáticas.
-- `animation/scripts/calculus`: Contiene scripts relacionados con cálculos matemáticos avanzados, como `sum.py`.
-- `README.md`: Documentación del proyecto.
-- Otros archivos y directorios relevantes.
+El repositorio tiene dos líneas de trabajo independientes:
 
-## Ubicación de Archivos
+| Ruta | Qué es |
+|---|---|
+| `animation/lnx/` | Librería compartida: estilo, utilidades de escena, config y CLI |
+| `animation/videos/` | Un video por carpeta, con su `scene.py` |
+| `docs-tex/` | Ejercicios, exámenes y documentos LaTeX |
+| `template/` | Clase y estilos LaTeX propios (`LnxClase.cls`, `Lnx.sty`, ...) |
+| `assets/logo/` | Logo en sus variantes, compartido por ambas líneas |
+| `lnx.yaml` | Configuración global: resolución, fps, paleta y reglas de calidad |
+| `.agents/skills/` | Skills: `lnx-design` (identidad visual), `lnx-video` (pipeline), `lnx-narracion` (voz y subtítulos) |
 
-- **Scripts principales**: Se encuentran en `animation/scripts`.
-- **Ejemplo destacado**: El archivo `calculus/sum.py` genera una animación de una serie matemática.
-- **Dependencias**: Si existe, el archivo `requirements.txt` contiene las bibliotecas necesarias.
+Detalle de la parte de video en [`animation/README.md`](animation/README.md).
 
 ## Contribuciones
 

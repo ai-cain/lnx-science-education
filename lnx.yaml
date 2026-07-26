@@ -1,0 +1,108 @@
+# Configuracion global del pipeline de video Lnx.
+# Cada video.yaml puede sobreescribir cualquiera de estos valores.
+
+formats:
+  vertical:            # TikTok / Reels / Shorts
+    resolution: [1080, 1920]
+    frame: [9.0, 16.0]
+  horizontal:          # YouTube
+    resolution: [1920, 1080]
+    frame: [14.22, 8.0]
+
+defaults:
+  format: vertical
+  fps: 60
+  quality: low         # low | medium | high | prod
+  level: basico
+  status: draft
+
+theme:
+  background: "#111111"
+  surface: "#1f1f1f"
+  accent_cyan: "#00F5FF"
+  accent_magenta: "#FF00F5"
+  accent_yellow: "#FFEE00"
+  accent_purple: "#9D00FF"
+  gradient_main: ["#00F5FF", "#FF00F5"]
+  gradient_highlight: ["#FFEE00", "#9D00FF"]
+
+typography:
+  tex_template: MathPazoKpTemplate
+  min_font_size: 28
+
+# Narracion y subtitulos. Cambiar 'engine' basta para cambiar de motor.
+voice:
+  engine: gtts             # gtts | openai | elevenlabs | azure | recorder
+  lang: es
+  tld: com.mx              # acento del gTTS en español (com.mx = latino neutro)
+  transcribe: true         # Whisper: sincroniza los subtitulos palabra a palabra
+  model: base              # modelo de Whisper: tiny | base | small | medium
+
+  openai:
+    voice: nova
+    model: tts-1-hd
+  elevenlabs:
+    voice: Sarah
+    model: eleven_multilingual_v2
+  azure:
+    voice: es-PE-CamilaNeural
+    style: friendly
+
+subtitles:
+  enabled: true
+  font_size: 72            # el frame vertical mide 16 de alto: hace falta grande
+  y: -5.0                  # zona baja pero por encima de la UI de TikTok
+  max_chars_por_linea: 24  # se parte en varias lineas en vez de encogerse
+  line_spacing: 0.8
+  max_width_ratio: 0.85    # red de seguridad
+  color: "#FFFFFF"
+  highlight: "#FFEE00"     # color de la palabra que se esta pronunciando
+  stroke_width: 8          # contorno oscuro para que se lea sobre cualquier fondo
+
+# Valores que consume la libreria animation/lnx/. Cambialos aqui, nunca en el codigo.
+constants:
+  box:                       # BoxAnimation
+    width: 4.2
+    height: 2.5
+    corner_radius: 0.15
+    stroke_width: 2
+    image_scale: 0.25
+    image_buff: 0.5
+    display_time: 3.0
+    create_run_time: 0.5
+    fade_run_time: 0.8
+    tracer_radius: 0.08
+
+  logo:                      # logo_handler / animate_End
+    initial_scale: 0.4
+    target_scale: 0.16
+    buff: 0.25
+    fade_in_run_time: 0.1
+    end_width_ratio: 0.6     # ancho del logo final = 60% del ancho del frame
+    end_stroke_width: 2
+    end_run_time: 0.5
+    end_wait: 0.5
+
+  animation_styles:          # rate_func + run_time de logo_handler
+    smooth: {rate_func: smooth, run_time: 1.5}
+    elastic: {rate_func: ease_out_elastic, run_time: 2.0}
+    rush: {rate_func: rush_into, run_time: 0.8}
+    fast: {rate_func: ease_out_elastic, run_time: 0.2}
+
+  grid:                      # grillado
+    x_range: [-4, 4, 0.3]
+    y_range: [-6, 6, 0.3]
+    stroke_width: 0.5
+    stroke_opacity: 0.1
+
+# Restricciones que valida el checklist del skill lnx-video
+rules:
+  hook_max_start: 2.0        # segundos
+  beat_max_static: 6.0       # segundos sin cambio visual
+  safe_area_y: 5.6           # |y| max (frame vertical de 16 alto: 70%, evita la UI de TikTok)
+  safe_area_x: 3.8           # |x| max (frame vertical de 9 ancho)
+  duration:
+    basico: [30, 45]
+    intermedio: [60, 90]
+    avanzado: [60, 90]
+  no_repeat_archetype_within: 3

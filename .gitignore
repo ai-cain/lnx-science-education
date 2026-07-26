@@ -1,3 +1,11 @@
+.venv/
+media/
+
+*.pyc
+__pycache__/
+*.egg-info/
+build/
+dist/
 ## Core LaTeX/pdflatex auxiliary files:
 *.aux       # Auxiliary files
 *.lof       # List of figures
@@ -308,3 +316,14 @@ TSWLatexianTemp*
 ## Ignore all media and __pycache__ directories:
 media/       # Ignore all media directories
 __pycache__/ # Ignore all __pycache__ directories
+
+
+# Los skills propios viven en .agents/skills/ (fuente de verdad, versionada).
+# .claude/skills/ son junctions locales a esa carpeta, no se versionan.
+.claude/
+
+# Skills externos instalados con npx: se reinstalan con `npx skills install`
+# a partir de skills-lock.json. No se versionan (latex-document-skill son 20 MB
+# de capturas de ejemplo).
+.agents/skills/latex-document-skill/
+.agents/skills/manimce-best-practices/
