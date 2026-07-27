@@ -1,30 +1,30 @@
 from manim import *
 from lnx import *
 
-# demostracion-sin-palabras | trigonometria | intermedio
-# sin(a+b) = sin(a)cos(b) + cos(a)sin(b), demostrado con triangulos rectangulos
-# anidados (construccion clasica), sin apoyarnos en texto explicativo largo.
+# proof-without-words | trigonometry | intermediate
+# sin(a+b) = sin(a)cos(b) + cos(a)sin(b), demonstrated with nested right
+# triangles using the classical construction and no long explanatory text.
 #
-# El frame real es 9 x 16 unidades (x en [-4.5, 4.5], y en [-8, 8]).
-# Zona segura: |y| <= 5.6 y |x| <= 3.8.
+# The actual frame is 9 x 16 units (x in [-4.5, 4.5], y in [-8, 8]).
+# Safe area: |y| <= 5.6 and |x| <= 3.8.
 
-SAFE_W = 7.2
-
-
-def fit(m):
-    if m.width > SAFE_W:
-        m.scale_to_fit_width(SAFE_W)
-    return m
+SAFE_WIDTH = 7.2
 
 
-def etiqueta(tex, font_size, color, con_fondo=True):
-    """MathTex con fondo opcional para etiquetas que cruzan lineas."""
-    t = MathTex(tex, font_size=font_size, color=color)
-    if con_fondo:
-        t.add_background_rectangle(color=BG, opacity=0.92, buff=0.06)
-    # Las etiquetas siempre deben leerse por encima de la geometria.
-    t.set_z_index(10)
-    return t
+def fit_to_safe_width(mobject):
+    if mobject.width > SAFE_WIDTH:
+        mobject.scale_to_fit_width(SAFE_WIDTH)
+    return mobject
+
+
+def make_label(tex, font_size, color, with_background=True):
+    """Create a MathTex label with an optional background for line crossings."""
+    label = MathTex(tex, font_size=font_size, color=color)
+    if with_background:
+        label.add_background_rectangle(color=BG, opacity=0.92, buff=0.06)
+    # Labels must always remain readable above the geometry.
+    label.set_z_index(10)
+    return label
 
 
 class AngleSum(Scene):
@@ -32,223 +32,299 @@ class AngleSum(Scene):
         backgroundLnx(self)
         self.camera.tex_template = MathPazoKpTemplate()
 
-        marca = SVGMobject(LOGO_RENDER)
-        marca.width = config.frame_width * 0.14
-        marca.to_corner(DR, buff=0.3)
-        marca.set_opacity(0.85)
-        self.add(marca)
+        watermark = SVGMobject(LOGO_RENDER)
+        watermark.width = config.frame_width * 0.14
+        watermark.to_corner(DR, buff=0.3)
+        watermark.set_opacity(0.85)
+        self.add(watermark)
 
-        COLOR_A = ACCENT_CYAN      # angulo alpha / tramos "alpha"
-        COLOR_B = ACCENT_MAGENTA   # angulo beta / tramos "beta"
-        COLOR_HYP = ACCENT_YELLOW  # hipotenusa OP
-        COLOR_AUX = GREY_B         # lineas auxiliares (perpendiculares)
+        ALPHA_COLOR = ACCENT_CYAN
+        BETA_COLOR = ACCENT_MAGENTA
+        HYPOTENUSE_COLOR = ACCENT_YELLOW
+        AUXILIARY_COLOR = GREY_B
 
-        # Una suma angular menor abre la silueta: el triangulo principal deja
-        # de verse como una aguja y aprovecha mejor el ancho del frame vertical.
-        R = 7.0
-        a = 32 * DEGREES
-        b = 23 * DEGREES
+        # A smaller angle sum opens the silhouette so the main triangle uses
+        # the vertical frame width instead of looking like a narrow needle.
+        radius = 7.0
+        alpha = 32 * DEGREES
+        beta = 23 * DEGREES
 
-        OFFSET = np.array([-3.0, -3.3, 0])
-        O = ORIGIN + OFFSET
-        P = R * np.array([np.cos(a + b), np.sin(a + b), 0]) + OFFSET
-        H = np.array([P[0], OFFSET[1], 0])
-        M = R * np.cos(b) * np.array([np.cos(a), np.sin(a), 0]) + OFFSET
-        N = np.array([M[0], OFFSET[1], 0])
+        offset = np.array([-3.0, -3.3, 0])
+        O = ORIGIN + offset
+        P = radius * np.array([
+            np.cos(alpha + beta),
+            np.sin(alpha + beta),
+            0,
+        ]) + offset
+        H = np.array([P[0], offset[1], 0])
+        M = radius * np.cos(beta) * np.array([
+            np.cos(alpha),
+            np.sin(alpha),
+            0,
+        ]) + offset
+        N = np.array([M[0], offset[1], 0])
         K = np.array([H[0], M[1], 0])
 
-        origen = O
-        centro = (O + P + M + N + H + K) / 6
+        origin = O
+        center = (O + P + M + N + H + K) / 6
 
-        def afuera(A, B, dist=0.4):
-            """Punto medio de A-B desplazado hacia afuera de la figura (nunca hacia el centro)."""
-            mid = (A + B) / 2
-            d = B - A
-            n = np.array([-d[1], d[0], 0])
-            n = n / np.linalg.norm(n)
-            if np.dot(n, mid - centro) < 0:
-                n = -n
-            return mid + n * dist
+        def outside_segment(A, B, distance=0.4):
+            """Move the segment midpoint away from the figure center."""
+            midpoint = (A + B) / 2
+            direction = B - A
+            normal = np.array([-direction[1], direction[0], 0])
+            normal = normal / np.linalg.norm(normal)
+            if np.dot(normal, midpoint - center) < 0:
+                normal = -normal
+            return midpoint + normal * distance
 
         # ---------------------------------------------------------- hook 0-2s
-        titulo = MathTex(r"\sin(\alpha+\beta)", r"=", r"\,?\,", font_size=70)
-        titulo[0].set_color(COLOR_HYP)
-        titulo[2].set_color(COLOR_B)
-        titulo.set_stroke(width=1)
-        titulo.set_z_index(10)
-        titulo.move_to(UP * 5.35)
-        fit(titulo)
-        self.play(Write(titulo), run_time=0.9)
+        title = MathTex(r"\sin(\alpha+\beta)", r"=", r"\,?\,", font_size=70)
+        title[0].set_color(HYPOTENUSE_COLOR)
+        title[2].set_color(BETA_COLOR)
+        title.set_stroke(width=1)
+        title.set_z_index(10)
+        title.move_to(UP * 5.35)
+        fit_to_safe_width(title)
+        self.play(Write(title), run_time=0.9)
         self.wait(0.3)
 
-        # ------------------------------------------------------- construccion
-        # La base termina donde termina la geometria; antes sobraba una cola
-        # larga a la derecha que hacia que el triangulo pareciera mas estrecho.
-        base = Line(
+        # ------------------------------------------------------- construction
+        # The support line ends with the geometry. A long fixed tail made the
+        # main triangle look artificially narrow.
+        baseline = Line(
             O + LEFT * 0.25,
             N + RIGHT * 0.25,
-            color=COLOR_AUX,
+            color=AUXILIARY_COLOR,
             stroke_width=2,
             stroke_opacity=0.55,
         )
-        self.play(Create(base), run_time=0.6)
+        self.play(Create(baseline), run_time=0.6)
 
-        rayo_a = Line(origen, M, color=COLOR_A, stroke_width=4)
-        arco_a = Angle(base, rayo_a, radius=0.55, color=COLOR_A)
-        etq_a = etiqueta(r"\alpha", 36, COLOR_A, con_fondo=False).move_to(
-            Angle(base, rayo_a, radius=0.9).point_from_proportion(0.5)
+        alpha_ray = Line(origin, M, color=ALPHA_COLOR, stroke_width=4)
+        alpha_arc = Angle(baseline, alpha_ray, radius=0.55, color=ALPHA_COLOR)
+        alpha_label = make_label(
+            r"\alpha", 36, ALPHA_COLOR, with_background=False
+        ).move_to(
+            Angle(baseline, alpha_ray, radius=0.9).point_from_proportion(0.5)
         )
-        self.play(Create(rayo_a), Create(arco_a), Write(etq_a), run_time=0.7)
+        self.play(
+            Create(alpha_ray),
+            Create(alpha_arc),
+            Write(alpha_label),
+            run_time=0.7,
+        )
         self.wait(0.2)
 
-        hip = Line(origen, P, color=COLOR_HYP, stroke_width=6)
-        arco_b = Angle(rayo_a, hip, radius=0.9, color=COLOR_B)
-        etq_b = etiqueta(r"\beta", 36, COLOR_B, con_fondo=False).move_to(
-            Angle(rayo_a, hip, radius=1.25).point_from_proportion(0.5)
+        hypotenuse = Line(origin, P, color=HYPOTENUSE_COLOR, stroke_width=6)
+        beta_arc = Angle(alpha_ray, hypotenuse, radius=0.9, color=BETA_COLOR)
+        beta_label = make_label(
+            r"\beta", 36, BETA_COLOR, with_background=False
+        ).move_to(
+            Angle(alpha_ray, hypotenuse, radius=1.25).point_from_proportion(0.5)
         )
-        self.play(Create(hip), Create(arco_b), Write(etq_b), run_time=0.8)
+        self.play(
+            Create(hypotenuse),
+            Create(beta_arc),
+            Write(beta_label),
+            run_time=0.8,
+        )
 
-        etq_op = etiqueta("1", 34, WHITE).move_to(afuera(origen, P, 0.4))
-        self.play(FadeIn(etq_op), run_time=0.4)
+        unit_label = make_label("1", 34, WHITE).move_to(
+            outside_segment(origin, P, 0.4)
+        )
+        self.play(FadeIn(unit_label), run_time=0.4)
         self.wait(0.4)
 
-        def escuadra(vertice, hacia1, hacia2, length=0.15):
-            """Marca de 90 grados: las dos lineas SIEMPRE apuntan desde el
-            vertice hacia afuera (nunca al reves), para que la escuadra caiga
-            del lado correcto del angulo."""
+        def make_right_angle(vertex, endpoint_1, endpoint_2, length=0.15):
+            """Create a right-angle marker whose rays start at the vertex."""
             return RightAngle(
-                Line(vertice, hacia1), Line(vertice, hacia2),
-                length=length, color=WHITE, stroke_width=2,
+                Line(vertex, endpoint_1),
+                Line(vertex, endpoint_2),
+                length=length,
+                color=WHITE,
+                stroke_width=2,
             )
 
-        # ---- triangulo 1: O-M-P (hipotenusa 1, cateto adyacente cos(b),
-        # cateto opuesto sin(b)) — se completa entero antes de seguir.
-        punto_m = Dot(M, color=WHITE, radius=0.06)
-        perp_pm = DashedLine(P, M, color=COLOR_AUX, stroke_width=2)
-        angulo_m = escuadra(M, origen, P)
-        self.play(FadeIn(punto_m), Create(perp_pm), Create(angulo_m), run_time=0.6)
+        # Triangle 1: O-M-P. Its hypotenuse is 1, adjacent side is cos(beta),
+        # and opposite side is sin(beta). Complete it before moving forward.
+        point_m = Dot(M, color=WHITE, radius=0.06)
+        perpendicular_pm = DashedLine(P, M, color=AUXILIARY_COLOR, stroke_width=2)
+        right_angle_m = make_right_angle(M, origin, P)
+        self.play(
+            FadeIn(point_m),
+            Create(perpendicular_pm),
+            Create(right_angle_m),
+            run_time=0.6,
+        )
 
-        etq_om = etiqueta(r"\cos\beta", 28, COLOR_A).move_to(afuera(origen, M, 0.4))
-        etq_mp = etiqueta(r"\sin\beta", 30, COLOR_B).move_to(afuera(M, P, 0.45))
-        self.play(Write(etq_om), run_time=0.5)
-        self.play(Write(etq_mp), run_time=0.5)
+        om_label = make_label(r"\cos\beta", 28, ALPHA_COLOR).move_to(
+            outside_segment(origin, M, 0.4)
+        )
+        mp_label = make_label(r"\sin\beta", 30, BETA_COLOR).move_to(
+            outside_segment(M, P, 0.45)
+        )
+        self.play(Write(om_label), run_time=0.5)
+        self.play(Write(mp_label), run_time=0.5)
         self.wait(0.4)
 
-        # ---- triangulo 2: O-N-M (hipotenusa cos(b), cateto opuesto cos(b)sin(a))
-        punto_n = Dot(N, color=WHITE, radius=0.06)
-        perp_mn = DashedLine(M, N, color=COLOR_AUX, stroke_width=2)
-        angulo_n = escuadra(N, origen, M)
-        self.play(FadeIn(punto_n), Create(perp_mn), Create(angulo_n), run_time=0.6)
-        zona_alpha = Polygon(
-            origen, N, M,
-            fill_color=COLOR_A,
+        # Triangle 2: O-N-M. Its hypotenuse is cos(beta), and its opposite side
+        # is cos(beta)sin(alpha).
+        point_n = Dot(N, color=WHITE, radius=0.06)
+        perpendicular_mn = DashedLine(M, N, color=AUXILIARY_COLOR, stroke_width=2)
+        right_angle_n = make_right_angle(N, origin, M)
+        self.play(
+            FadeIn(point_n),
+            Create(perpendicular_mn),
+            Create(right_angle_n),
+            run_time=0.6,
+        )
+        alpha_region = Polygon(
+            origin,
+            N,
+            M,
+            fill_color=ALPHA_COLOR,
             fill_opacity=0.08,
             stroke_width=0,
         )
-        self.play(FadeIn(zona_alpha), run_time=0.25)
-        self.bring_to_back(zona_alpha)
-        etq_mn = etiqueta(r"\cos\beta\sin\alpha", 26, COLOR_A).move_to(afuera(M, N, 0.55))
-        self.play(Write(etq_mn), run_time=0.6)
+        self.play(FadeIn(alpha_region), run_time=0.25)
+        self.bring_to_back(alpha_region)
+        mn_label = make_label(r"\cos\beta\sin\alpha", 26, ALPHA_COLOR).move_to(
+            outside_segment(M, N, 0.55)
+        )
+        self.play(Write(mn_label), run_time=0.6)
         self.wait(0.4)
 
-        # ---- triangulo 3: M-K-P (hipotenusa sin(b), cateto opuesto sin(b)cos(a))
-        punto_k = Dot(K, color=WHITE, radius=0.06)
-        perp_mk = DashedLine(M, K, color=COLOR_AUX, stroke_width=2)
-        angulo_k = escuadra(K, M, P)
-        self.play(FadeIn(punto_k), Create(perp_mk), Create(angulo_k), run_time=0.6)
-        zona_beta = Polygon(
-            M, K, P,
-            fill_color=COLOR_B,
+        # Triangle 3: M-K-P. Its hypotenuse is sin(beta), and its opposite side
+        # is sin(beta)cos(alpha).
+        point_k = Dot(K, color=WHITE, radius=0.06)
+        perpendicular_mk = DashedLine(M, K, color=AUXILIARY_COLOR, stroke_width=2)
+        right_angle_k = make_right_angle(K, M, P)
+        self.play(
+            FadeIn(point_k),
+            Create(perpendicular_mk),
+            Create(right_angle_k),
+            run_time=0.6,
+        )
+        beta_region = Polygon(
+            M,
+            K,
+            P,
+            fill_color=BETA_COLOR,
             fill_opacity=0.05,
             stroke_width=0,
         )
-        self.play(FadeIn(zona_beta), run_time=0.25)
-        self.bring_to_back(zona_beta)
+        self.play(FadeIn(beta_region), run_time=0.25)
+        self.bring_to_back(beta_region)
 
-        # de donde sale sin(b)cos(a) y sin(b)sin(a): en M se repite el angulo
-        # alpha (alterno interno entre M->K, paralela a la base, y M->P).
-        arco_alpha2 = Angle(Line(M, K), Line(M, P), radius=0.4, color=COLOR_A, other_angle=True)
-        etq_alpha2 = etiqueta(r"\alpha", 24, COLOR_A, con_fondo=False).move_to(
-            Angle(Line(M, K), Line(M, P), radius=0.62, other_angle=True).point_from_proportion(0.5)
+        # The alpha angle repeats at M as an alternate interior angle between
+        # M->K, which is parallel to the baseline, and M->P.
+        repeated_alpha_arc = Angle(
+            Line(M, K),
+            Line(M, P),
+            radius=0.4,
+            color=ALPHA_COLOR,
+            other_angle=True,
         )
-        self.play(Create(arco_alpha2), Write(etq_alpha2), run_time=0.6)
+        repeated_alpha_label = make_label(
+            r"\alpha", 24, ALPHA_COLOR, with_background=False
+        ).move_to(
+            Angle(
+                Line(M, K),
+                Line(M, P),
+                radius=0.62,
+                other_angle=True,
+            ).point_from_proportion(0.5)
+        )
+        self.play(
+            Create(repeated_alpha_arc),
+            Write(repeated_alpha_label),
+            run_time=0.6,
+        )
         self.wait(0.6)
 
-
-        # ---- ahora si, la perpendicular que arma lo que queremos demostrar:
-        # sin(a+b) = P->H, partido en K->P (arriba, = sin(b)cos(a)) y H->K
-        # (abajo, = cos(b)sin(a), ya mostrado como M->N). Solo se dibuja el
-        # tramo de arriba: el de abajo ya esta representado por M->N.
-        perp_ph = DashedLine(P, K, color=COLOR_AUX, stroke_width=2)
-        punto_h = Dot(H, color=WHITE, radius=0.06)
-        angulo_h = escuadra(H, origen, P)
-        self.play(Create(perp_ph), FadeIn(punto_h), Create(angulo_h), run_time=0.6)
+        # Build the perpendicular that represents sin(alpha + beta) = P->H.
+        # K->P is sin(beta)cos(alpha), while H->K equals the already displayed
+        # M->N = cos(beta)sin(alpha). Only draw the upper dashed segment because
+        # the lower component is already represented by M->N.
+        perpendicular_ph = DashedLine(P, K, color=AUXILIARY_COLOR, stroke_width=2)
+        point_h = Dot(H, color=WHITE, radius=0.06)
+        right_angle_h = make_right_angle(H, origin, P)
+        self.play(
+            Create(perpendicular_ph),
+            FadeIn(point_h),
+            Create(right_angle_h),
+            run_time=0.6,
+        )
         self.wait(0.5)
 
-        # a la derecha del segmento K-P (nunca a la izquierda: ahi pasa la
-        # hipotenusa amarilla y se confunde con su etiqueta)
-        etq_kp = etiqueta(r"\sin\beta\cos\alpha", 24, COLOR_B).move_to(
+        # Place the label to the right of K-P so it does not collide with the
+        # yellow hypotenuse or its label.
+        kp_label = make_label(r"\sin\beta\cos\alpha", 24, BETA_COLOR).move_to(
             K + (P - K) * 0.35 + RIGHT * 0.38
         )
-        self.play(Write(etq_kp), run_time=0.6)
+        self.play(Write(kp_label), run_time=0.6)
         self.wait(0.6)
 
-        # ------------------------------------------------------- ensamblar
-        # El triangulo O-H-P es el resultado geometrico: al ensamblarlo se
-        # apagan los rellenos parciales y queda un unico fondo amarillo.
-        triangulo_grande = Polygon(
-            origen, H, P,
-            fill_color=COLOR_HYP,
+        # ----------------------------------------------------------- assembly
+        # O-H-P is the geometric result. Fade the partial regions so only the
+        # subtle yellow result fill remains.
+        main_triangle = Polygon(
+            origin,
+            H,
+            P,
+            fill_color=HYPOTENUSE_COLOR,
             fill_opacity=0.10,
             stroke_width=0,
         )
         self.play(
-            FadeOut(zona_alpha),
-            FadeOut(zona_beta),
-            FadeIn(triangulo_grande),
+            FadeOut(alpha_region),
+            FadeOut(beta_region),
+            FadeIn(main_triangle),
             run_time=0.5,
         )
-        self.bring_to_back(triangulo_grande)
+        self.bring_to_back(main_triangle)
 
-        # Cierra O-H en amarillo sin recolorear toda la base auxiliar.
-        segmento_oh = Line(origen, H, color=COLOR_HYP, stroke_width=6)
-        segmento_oh.set_z_index(5)
-        self.play(Create(segmento_oh), run_time=0.5)
+        # Close O-H in yellow without recoloring the full support line.
+        bottom_edge = Line(origin, H, color=HYPOTENUSE_COLOR, stroke_width=6)
+        bottom_edge.set_z_index(5)
+        self.play(Create(bottom_edge), run_time=0.5)
 
-        # PH es el resultado que estamos ensamblando: amarillo como la hipotenusa.
-        segmento_ph = Line(H, P, color=COLOR_HYP, stroke_width=6)
-        segmento_ph.set_z_index(5)
-        self.play(Indicate(segmento_ph, scale_factor=1.0), run_time=0.8)
+        # P-H is the result being assembled, so it shares the hypotenuse color.
+        result_edge = Line(H, P, color=HYPOTENUSE_COLOR, stroke_width=6)
+        result_edge.set_z_index(5)
+        self.play(Indicate(result_edge, scale_factor=1.0), run_time=0.8)
         self.wait(0.3)
 
         formula = MathTex(
-            r"\sin(\alpha+\beta)", r"=",
-            r"\sin\beta\cos\alpha", r"+", r"\cos\beta\sin\alpha",
+            r"\sin(\alpha+\beta)",
+            r"=",
+            r"\sin\beta\cos\alpha",
+            r"+",
+            r"\cos\beta\sin\alpha",
             font_size=42,
         )
-        formula[2].set_color(COLOR_B)
-        formula[4].set_color(COLOR_A)
-        formula[0].set_color(COLOR_HYP)
+        formula[2].set_color(BETA_COLOR)
+        formula[4].set_color(ALPHA_COLOR)
+        formula[0].set_color(HYPOTENUSE_COLOR)
         formula.set_stroke(width=1)
         formula.set_z_index(21)
         formula.move_to(DOWN * 5.25)
-        fit(formula)
+        fit_to_safe_width(formula)
 
-        # nada se escribe de cero: todo baja como copia de lo que ya esta en pantalla.
-        # "sin(a+b)" viene del titulo de arriba; cada termino viene de su etiqueta
-        # en el dibujo (etq_kp -> sin(b)cos(a), etq_mn -> cos(b)sin(a)).
-        self.play(FadeOut(titulo[1]), FadeOut(titulo[2]), run_time=0.4)
-        self.play(TransformFromCopy(titulo[0], formula[0]), run_time=1.0)
+        # Assemble the formula from copies of objects already on screen.
+        self.play(FadeOut(title[1]), FadeOut(title[2]), run_time=0.4)
+        self.play(TransformFromCopy(title[0], formula[0]), run_time=1.0)
         self.play(Write(formula[1]), run_time=0.3)
-        self.play(TransformFromCopy(etq_kp[1], formula[2]), run_time=0.9)
+        self.play(TransformFromCopy(kp_label[1], formula[2]), run_time=0.9)
         self.play(Write(formula[3]), run_time=0.3)
-        self.play(TransformFromCopy(etq_mn[1], formula[4]), run_time=0.9)
+        self.play(TransformFromCopy(mn_label[1], formula[4]), run_time=0.9)
         self.wait(1.2)
 
-        caja = SurroundingRectangle(formula, buff=0.18, corner_radius=0.12)
-        caja.set_stroke(width=4, color=[YELLOW, ORANGE])
-        caja.set_z_index(20)
-        self.play(Create(caja), run_time=0.7)
+        result_box = SurroundingRectangle(formula, buff=0.18, corner_radius=0.12)
+        result_box.set_stroke(width=4, color=[YELLOW, ORANGE])
+        result_box.set_z_index(20)
+        self.play(Create(result_box), run_time=0.7)
         self.wait(1.6)
 
         animate_End(scene=self)
