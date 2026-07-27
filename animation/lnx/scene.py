@@ -1,7 +1,7 @@
 from manim import *
 from PIL import Image
 
-from .assets import LOGO_SVG
+from .assets import LOGO_SVG, LOGO_RENDER
 from .config import CONSTANTS
 from .theme import BG, SURFACE
 
@@ -158,7 +158,7 @@ def logo_handler(scene, existing_logo=None, image_path=None, corner=DR,
     return logo
 
 ## finalizar el logo aquí va
-def animate_End(scene, svg_path=LOGO_SVG, width_ratio=LOGO["end_width_ratio"], colors=[YELLOW, ORANGE]):
+def animate_End(scene, svg_path=LOGO_RENDER, width_ratio=LOGO["end_width_ratio"], colors=[YELLOW, ORANGE]):
     """
     Cierre de marca: dibuja el contorno del logo y lo rellena.
 

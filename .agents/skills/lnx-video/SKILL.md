@@ -110,6 +110,37 @@ class NombreDeLaClase(Scene):
 
 Nada de colores ni rutas hardcodeadas: usa las constantes de `lnx`.
 
+### Construcciones geometricas (triangulos, angulos, demostraciones visuales)
+
+Cuando la escena arma una figura a partir de puntos calculados (no solo texto/formulas):
+
+- **Todo segmento auxiliar que aparezca dibujado debe tener su etiqueta.** Si el
+  video traza una linea (aunque sea de apoyo, tipo `cos(beta)`) y no la nombra,
+  el espectador no sabe que representa y confunde esa linea con otra (p. ej. la
+  confunde con la hipotenusa). No dejes segmentos "mudos".
+- **Las etiquetas de longitud siempre van hacia afuera de la figura**, nunca
+  hacia el interior ni encima de otra linea — igual que el "1" sobre la
+  hipotenusa en `trigonometry/seno-suma-angulos`. Calcula un punto de
+  referencia (centroide de los vertices) y desplaza cada etiqueta en la
+  direccion perpendicular al segmento que se aleja de ese centro:
+  ```python
+  centro = (A + B + C + ...) / n  # vertices de la figura
+
+  def afuera(P1, P2, dist=0.4):
+      mid = (P1 + P2) / 2
+      d = P2 - P1
+      n = np.array([-d[1], d[0], 0]) / np.linalg.norm(d)
+      if np.dot(n, mid - centro) < 0:
+          n = -n
+      return mid + n * dist
+  ```
+- **Angulos rectos siempre marcados y visibles**: usa `RightAngle(linea1, linea2, length=0.3-0.35, color=WHITE)`.
+  Blanco (no un color de acento) para que no se confunda con las demas lineas
+  y se note incluso cuando cruza otras lineas punteadas.
+- **Todo texto sobre o cerca de una linea de color necesita fondo solido**
+  (`mobj.add_background_rectangle(color=BG, opacity=0.9, buff=0.06)`), o se
+  pierde contra el color de la linea (p. ej. texto blanco sobre linea amarilla).
+
 ## Etapa 6 — Renderizar
 
 ```bash

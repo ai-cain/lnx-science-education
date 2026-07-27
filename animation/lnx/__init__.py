@@ -7,7 +7,7 @@ from .scene import (
     SmartMathTex,
     grillado,
 )
-from .assets import LOGO_SVG, LOGO_DARK, LOGO_LIGHT, LOGO_MAIN
+from .assets import LOGO_SVG, LOGO_DARK, LOGO_LIGHT, LOGO_MAIN, LOGO_RENDER
 from .theme import (
     BG,
     SURFACE,
@@ -36,6 +36,7 @@ __all__ = [
     "LOGO_DARK",
     "LOGO_LIGHT",
     "LOGO_MAIN",
+    "LOGO_RENDER",
     "BG",
     "ACCENT_CYAN",
     "ACCENT_MAGENTA",

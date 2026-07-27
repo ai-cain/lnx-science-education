@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generado a partir de logo.svg: solo las letras (capa "l-n" + "n" de "dark"),
+     sin los rectangulos de fondo de las capas de Inkscape que Manim no oculta. -->
+<svg
+   width="1800"
+   height="1800"
+   viewBox="0 0 180 180"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(2.8865902,1.424139)">
+    <path
+       d="m 34.273289,103.5389 h 27.74 v 10.64 h -41.42 V 60.978902 h 13.68 z"
+       fill="#ff1744" />
+    <path
+       d="m 85.19327,84.158902 q 4.028,0 9.12,1.52 V 114.1789 h 13.3 V 73.898902 h -11.78 l -0.76,3.8 q -3.572,-2.356 -7.296,-3.42 -3.8,-1.14 -6.384,-1.14 h -3.42 q -5.167998,0 -8.283998,3.116 -3.116,3.116 -3.116,8.284 V 114.1789 H 79.87327 V 86.818902 q 0,-1.14 0.76,-1.9 0.76,-0.76 1.9,-0.76 z"
+       fill="#ffffff" />
+    <path
+       d="m 140.01321,73.898902 h 14.82 l -12.16,20.14 12.54,20.139998 h -14.82 l -6.84,-12.16 -6.84,12.16 h -14.82 l 12.54,-20.139998 -12.16,-20.14 h 14.82 l 6.46,12.16 z"
+       fill="#ff1744" />
+  </g>
+</svg>

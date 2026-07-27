@@ -1,4 +1,5 @@
 import logging
+import re
 import subprocess
 import sys
 import tempfile
@@ -36,6 +37,19 @@ def mostrar(videos):
         print(f"  {i:>2}. {v.slug:<42} {v.scene}")
 
 
+def _normalizar(texto):
+    """Minusculas y sin separadores: 'Angle-Sum', 'ANGLESUM' y 'angle_sum'
+    deben ser lo mismo para quien busca."""
+    return re.sub(r"[^a-z0-9]", "", texto.lower())
+
+
+def coincide(v, patron):
+    """Busca tanto en el slug (carpeta) como en el nombre de la clase,
+    porque eso es lo que se ve en 'lnx list' y lo que la gente escribe."""
+    patron = _normalizar(patron)
+    return patron in _normalizar(v.slug) or patron in _normalizar(v.scene)
+
+
 def elegir(videos):
     """Menu interactivo: devuelve los videos a renderizar."""
     mostrar(videos)
@@ -50,7 +64,7 @@ def elegir(videos):
         indices = [int(p) for p in respuesta.replace(",", " ").split()]
         elegidos = [videos[i - 1] for i in indices if 1 <= i <= len(videos)]
     else:
-        elegidos = [v for v in videos if respuesta.lower() in v.slug.lower()]
+        elegidos = [v for v in videos if coincide(v, respuesta)]
 
     if not elegidos:
         log.error("Nada coincide con '%s'.", respuesta)
@@ -119,9 +133,10 @@ def main():
 
     if argumentos and argumentos[0] in ("-h", "--help", "help"):
         print("Uso:")
-        print("  lnx              menu interactivo")
-        print("  lnx list         listar las escenas")
-        print("  lnx <texto>      renderizar las escenas que coincidan")
+        print("  lnx                    menu interactivo")
+        print("  lnx list               listar las escenas")
+        print("  lnx <texto>            renderizar las escenas que coincidan (calidad baja)")
+        print("  lnx <texto> <calidad>  calidad: " + ", ".join(QUALITY_FLAG))
         return 0
 
     if argumentos and argumentos[0] == "list":
@@ -130,12 +145,19 @@ def main():
 
     if argumentos:
         patron = argumentos[0]
-        elegidos = [v for v in videos if patron.lower() in v.slug.lower()]
+        elegidos = [v for v in videos if coincide(v, patron)]
         if not elegidos:
             log.error("Nada coincide con '%s'. Prueba 'lnx list'.", patron)
             return 1
         log.info("Seleccionados: %s", ", ".join(v.scene for v in elegidos))
-        calidad = DEFAULTS["quality"]
+
+        if len(argumentos) > 1:
+            calidad = argumentos[1].lower()
+            if calidad not in QUALITY_FLAG:
+                log.warning("Calidad '%s' desconocida, uso '%s'.", calidad, DEFAULTS["quality"])
+                calidad = DEFAULTS["quality"]
+        else:
+            calidad = DEFAULTS["quality"]
     else:
         elegidos = elegir(videos)
         if not elegidos:
