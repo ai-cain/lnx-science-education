@@ -217,23 +217,21 @@ class AngleSum(Scene):
         self.play(FadeIn(beta_region), run_time=0.25)
         self.bring_to_back(beta_region)
 
-        # The alpha angle repeats at M as an alternate interior angle between
-        # M->K, which is parallel to the baseline, and M->P.
+        # The alpha angle appears at P between the vertical segment P->K and
+        # the segment P->M, which is perpendicular to the alpha ray O->M.
         repeated_alpha_arc = Angle(
-            Line(M, K),
-            Line(M, P),
+            Line(P, K),
+            Line(P, M),
             radius=0.4,
             color=ALPHA_COLOR,
-            other_angle=True,
         )
         repeated_alpha_label = make_label(
             r"\alpha", 24, ALPHA_COLOR, with_background=False
         ).move_to(
             Angle(
-                Line(M, K),
-                Line(M, P),
+                Line(P, K),
+                Line(P, M),
                 radius=0.62,
-                other_angle=True,
             ).point_from_proportion(0.5)
         )
         self.play(
