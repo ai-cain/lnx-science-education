@@ -47,6 +47,11 @@ Levels: `basic`, `intermediate`, and `advanced`.
 
 Do not repeat any of the last three archetypes or the immediately previous topic.
 
+### Discovery and validation references
+
+- Use [MathWorld's Quadrilaterals index](https://mathworld.wolfram.com/topics/Quadrilaterals.html) as an elegant discovery catalog for geometric video ideas.
+- Treat indexes as ideation aids, not theorem sources. Before implementation, validate every formula, hypothesis, and sign convention against the specific theorem page; for example, use [Descartes Circle Theorem](https://mathworld.wolfram.com/DescartesCircleTheorem.html) for a Descartes-circle video.
+
 ## Stage 3 — Beat script preview
 
 Present this preview before writing Python:
@@ -108,11 +113,53 @@ class ExampleScene(Scene):
 
 Use shared `lnx` constants instead of hard-coded colors or asset paths.
 Write every identifier, comment, docstring, and technical artifact in English.
+For Spanish visible text, use `circunferencia` for a stroke, locus, tangency, or curvature; use `círculo` only for a filled disk, planar region, or area. Keep the Manim API name `Circle`.
 
 ### Geometric constructions
 
 - Label every visible support segment.
 - Place length labels outside the figure rather than inside or over another line.
+- For tangent circles, calculate each tangency point from the centers and radii;
+  mark it with exactly one small solid `Dot` and validate that it lies on both
+  circumferences. Never combine a ring and a dot for one tangency point. Keep
+  tangency dots small, slightly subdued, and secondary to the construction
+  (`radius` around `0.035`, opacity around `0.8`); do not animate them with
+  dramatic scaling or individual flashes.
+- Never pose a geometric unknown without keeping the exact target object
+  visible throughout its derivation. Mark it with `?`, keep its label or leader
+  aligned whenever the construction moves, and transform that same object
+  directly into the solved result instead of removing it and drawing a
+  replacement later.
+- Treat a focal zoom as a camera operation: keep the target geometry fixed in
+  center and size, animate only `self.camera.frame`, then restore the camera.
+  Never simulate a zoom with `GrowFromCenter`, a scaling `Indicate`, or a
+  replacement target.
+- When introducing a small unknown, zoom the complete scene toward that
+  unchanged target and restore the baseline camera before revealing the
+  method. Save the camera state before every independent zoom/restore cycle.
+- State the exact task before introducing the method or theorem: identify the
+  target object, name the requested quantity (for example, radius rather than
+  merely “the circle”), pause for recognition, and only then reveal formulas.
+- Make payoff copy name the mathematical relation that was proved (for
+  example, “tangent to all three”), not a vague spatial impression such as
+  “fills the gap” or “fills the empty space.”
+- Explain the semantics of every parameter in a generalized formula. Never
+  confuse dimension with the number of visible objects; build a large
+  configuration by repeatedly applying the correct local relation (for
+  example, an 8-circle planar Descartes packing repeats the four-circle
+  relation with `n=2`, not `n=8`).
+  For Descartes' generalization, `n=3` means tangent spheres in 3D, not more
+  planar circles; do not switch to a sphere challenge unless the scene is
+  designed as a genuine 3D construction.
+- In vertical final challenges, give the top stack enough air: separate title,
+  formula, parameter note, local-rule note, and prompt with visible vertical
+  gaps; if needed, slightly reduce formula size and move the construction down
+  instead of compressing the header.
+- Do not place labels for tiny adjacent objects directly inside the contact
+  cluster. Put secondary labels outside with short leader lines, staggered
+  vertically, and keep the primary unknown label visually dominant.
+- Show dense local markers only during the relevant zoom, then remove them
+  before returning to the complete construction.
 - Compute the outward normal from the figure center:
 
 ```python
@@ -154,3 +201,24 @@ The CLI reads resolution and frame rate from `lnx.yaml`.
 - [ ] The archetype differs from the last three videos.
 - [ ] The video covers one concept.
 - [ ] `lnx list` discovers the video and `lnx render <slug>` completes successfully.
+
+## Stage 8 — Persist key learnings
+
+Before reporting completion:
+
+1. Collect every item that will appear under `## Key Learnings`.
+2. Convert each reusable learning into a concrete rule, checklist item, or
+   minimal recipe in the most relevant project skill.
+3. Save the same decision, bug fix, preference, or discovery to Engram.
+4. Do not duplicate prose: update an existing rule when the learning refines it.
+
+Production rules learned from visual review:
+
+- For a focal geometric reveal, use
+  `create -> wait(0.8-1.0) -> zoom -> wait(0.8-1.0) -> restore -> wait(0.8-1.0)`
+  so the viewer can register both the local relation and the complete figure.
+- When a result moves into an occupied header region, fade out or transform the
+  previous header first. Results replace headers; they never stack over them.
+- Never `Circumscribe` a group whose members are far apart vertically. It
+  creates a tall meaningless rectangle; highlight the local object or the
+  payoff text instead.
