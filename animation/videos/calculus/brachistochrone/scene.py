@@ -64,7 +64,11 @@ def _cycloid_shape(T):
     return (T - np.sin(T)) / (1 - np.cos(T)) - DX / DY
 
 
-T_END = brentq(_cycloid_shape, 1e-9, 2 * np.pi - 1e-9)
+# El extremo inferior no puede acercarse mas a 0: en T ~ 1e-9 tanto T - sin T
+# como 1 - cos T se cancelan a 0.0 exacto en doble precision y el cociente sale
+# NaN. En 1e-2 la resta todavia se resuelve y la funcion ya vale -1.747, muy por
+# debajo de cero, asi que el intervalo sigue encerrando la raiz.
+T_END = brentq(_cycloid_shape, 1e-2, 2 * np.pi - 1e-4)
 R_CYC = DY / (1 - np.cos(T_END))
 # T_END > pi, asi que la cicloide baja por debajo de B y vuelve a subir: es el
 # caso interesante, y ademas es el que la hace mas larga que las otras dos.
