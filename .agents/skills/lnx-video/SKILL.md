@@ -115,6 +115,24 @@ Use shared `lnx` constants instead of hard-coded colors or asset paths.
 Write every identifier, comment, docstring, and technical artifact in English.
 For Spanish visible text, use `circunferencia` for a stroke, locus, tangency, or curvature; use `círculo` only for a filled disk, planar region, or area. Keep the Manim API name `Circle`.
 
+### Real data and sources
+
+When a video shows measurements, prefer real published data over invented
+numbers, and make the provenance auditable from the code itself.
+
+- Store the verbatim values in a `data.csv` next to `scene.py` and read them at
+  import time. Never paste a simulated series and present it as measured.
+- Cite the source in the `scene.py` header comment under a `Data source:` line:
+  title, publisher, full URL, sample size, and the units actually recorded.
+  Repeat the citation in the `data.csv` comment header.
+- Record the raw units as published and convert in code, so the conversion
+  stays reviewable (for example keep `temp_f` and derive `temp_c`).
+- State any fit quality on screen (`R^2`) and keep physically meaningful
+  parameters fixed. A freer fit that improves `R^2` while producing an
+  impossible constant is overfitting; comment on why the constrained fit wins.
+- The same rule applies to any sourced claim: put the reference in the header,
+  not only in the chat reply.
+
 ### Geometric constructions
 
 - Label every visible support segment.
@@ -198,6 +216,8 @@ The CLI reads resolution and frame rate from `lnx.yaml`.
 - [ ] No mobject leaves the frame or overlaps unintentionally.
 - [ ] The scene uses `BG`, `MathPazoKpTemplate`, and `animate_End`.
 - [ ] Colors and timing use project configuration and shared constants.
+- [ ] Any data shown is real, stored in `data.csv`, and cited in the `scene.py`
+      header with a full URL.
 - [ ] The archetype differs from the last three videos.
 - [ ] The video covers one concept.
 - [ ] `lnx list` discovers the video and `lnx render <slug>` completes successfully.

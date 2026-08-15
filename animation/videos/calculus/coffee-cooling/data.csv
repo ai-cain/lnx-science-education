@@ -1,0 +1,21 @@
+# Real measured coffee cooling data.
+# Source: "Project 1: Measuring Temperature & Newton's Law of Cooling -
+# Coffee Experiment Data", University of Manitoba course materials.
+# https://server.math.umanitoba.ca/~coopers5/pastcourses_unl_materials/project1_coffee_data.pdf
+#
+# A cup of coffee measured at regular intervals in a room at 71 F (21.67 C).
+# temp_c is the verbatim Fahrenheit reading converted with (F - 32) * 5 / 9.
+t_min,temp_f,temp_c
+0,186,85.56
+1,179,81.67
+2,175,79.44
+3,171,77.22
+8,156,68.89
+13,144,62.22
+18,135,57.22
+23,127,52.78
+28,120,48.89
+33,116,46.67
+38,111,43.89
+43,107,41.67
+48,104,40.00
