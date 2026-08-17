@@ -89,6 +89,7 @@ Auto-discovered via `lnx list` (62 videos, `_template/ejemplo` excluded — it's
 | double-angle | DoubleAngle | 2026-08-15 | | |
 | half-angle | HalfAngle | 2026-08-15 | | |
 | law-of-cosines | LawOfCosines | 2026-08-15 | | |
+| law-of-cosines-power-of-point | LawOfCosinesPowerOfPoint | 2026-08-17 | | |
 | law-of-sines | LawOfSines | 2026-08-08 | ✓ | 2026-08-09 |
 | n-angle-chebyshev | NAngleChebyshev | 2026-08-15 | | |
 | product-to-sum | ProductToSum | 2026-08-15 | | |
